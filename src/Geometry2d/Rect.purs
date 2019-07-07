@@ -18,6 +18,8 @@ instance defaultRect :: Semiring a => Default (Rect a) where
     , rotation : zero
     }
 
+-- TRANSFORM
+
 move :: forall a. Semiring a => Vec D2 a -> Rect a -> Rect a
 move v (Rect rect) = Rect (rect { center = rect.center + v })
 
@@ -29,3 +31,14 @@ scale fac (Rect rect) = Rect (rect { size = rect.size * (pure fac) })
 
 resize :: forall a. Semiring a => Vec D2 a -> Rect a -> Rect a
 resize size (Rect rect) = Rect (rect { size = size })
+
+-- QUERY
+
+getUpperLeft :: Rect Number -> Vec D2 Number
+getUpperLeft (Rect {center, size}) = center - (size * pure 0.5)
+
+getCenter :: forall a. Semiring a => Rect a -> Vec D2 a
+getCenter (Rect {center}) = center
+
+getSize :: forall a. Semiring a => Rect a -> Vec D2 a
+getSize (Rect {size}) = size
