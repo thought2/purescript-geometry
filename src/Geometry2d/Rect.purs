@@ -26,8 +26,8 @@ move v (Rect rect) = Rect (rect { center = rect.center + v })
 rotate :: forall a. Semiring a => Number -> Rect a -> Rect a
 rotate rad (Rect rect) = Rect (rect { rotation = rect.rotation + rad })
 
-scale :: forall a. Semiring a => a -> Rect a -> Rect a
-scale fac (Rect rect) = Rect (rect { size = rect.size * (pure fac) })
+scale :: forall a. Semiring a => Vec D2 a -> Rect a -> Rect a
+scale vec (Rect rect) = Rect (rect { size = rect.size * vec })
 
 resize :: forall a. Semiring a => Vec D2 a -> Rect a -> Rect a
 resize size (Rect rect) = Rect (rect { size = size })
