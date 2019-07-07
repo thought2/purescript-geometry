@@ -1,11 +1,15 @@
-module Geometry2d.Rect where
+module Geometry2d.Rect (Rect, _center, _size, _rotation, _upperLeft) where
 
 import Prelude
-import Data.Vec (Vec)
-import Data.Typelevel.Num.Reps (D2)
-import Default(class Default)
 
-newtype Rect a = Rect
+import Data.Lens (Lens', lens)
+import Data.Typelevel.Num.Reps (D2)
+import Data.Vec (Vec)
+import Default (class Default)
+
+newtype Rect a = Rect (RectData a)
+
+type RectData a =
   { center :: Vec D2 a
   , size :: Vec D2 a
   , rotation :: Number
@@ -18,27 +22,20 @@ instance defaultRect :: Semiring a => Default (Rect a) where
     , rotation : zero
     }
 
--- TRANSFORM
+_Rect :: forall a. Lens' (Rect a) (RectData a)
+_Rect = lens (\(Rect rect) -> rect) (\(Rect rect) x -> Rect x)
 
-move :: forall a. Semiring a => Vec D2 a -> Rect a -> Rect a
-move v (Rect rect) = Rect (rect { center = rect.center + v })
+_center :: forall a. Lens' (Rect a) (Vec D2 a)
+_center = _Rect <<< (lens _.center $ _ { center = _ })
 
-rotate :: forall a. Semiring a => Number -> Rect a -> Rect a
-rotate rad (Rect rect) = Rect (rect { rotation = rect.rotation + rad })
+_size :: forall a. Lens' (Rect a) (Vec D2 a)
+_size = _Rect <<< (lens _.size $ _ { size = _ })
 
-scale :: forall a. Semiring a => Vec D2 a -> Rect a -> Rect a
-scale vec (Rect rect) = Rect (rect { size = rect.size * vec })
+_rotation :: forall a. Lens' (Rect a) Number
+_rotation = _Rect <<< (lens _.rotation $ _ { rotation = _ })
 
-resize :: forall a. Semiring a => Vec D2 a -> Rect a -> Rect a
-resize size (Rect rect) = Rect (rect { size = size })
-
--- QUERY
-
-getUpperLeft :: Rect Number -> Vec D2 Number
-getUpperLeft (Rect {center, size}) = center - (size * pure 0.5)
-
-getCenter :: forall a. Semiring a => Rect a -> Vec D2 a
-getCenter (Rect {center}) = center
-
-getSize :: forall a. Semiring a => Rect a -> Vec D2 a
-getSize (Rect {size}) = size
+_upperLeft :: Lens' (Rect Number) (Vec D2 Number)
+_upperLeft = _Rect <<< lens getter setter
+  where
+    getter {center, size} = center - (size * pure 0.5)
+    setter all@{center, size} ul = all { center = ul + (size * pure 0.5) }
