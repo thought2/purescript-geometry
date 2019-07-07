@@ -1,0 +1,9 @@
+module Geometry.Rect where
+
+newtype Rect a = Rect
+  { center :: Vec D2 a
+  , size :: Vec D2 a
+  , rotation :: Vec D1
+  }
+
+move :: Rect a -> Vec D2 -> Rect a

@@ -116,6 +116,25 @@ let upstream =
 
 let overrides = {=}
 
-let additions = {=}
+let additions = {
+  sized-vectors =
+      mkPackage
+        [ "arrays"
+        , "distributive"
+        , "foldable-traversable"
+        , "maybe"
+        , "prelude"
+        , "typelevel"
+        , "unfoldable"
+        ]
+        "https://github.com/thought2/purescript-sized-vectors.git"
+        "master"
+  , default =
+      mkPackage
+        [ "maybe"
+        ]
+        "https://github.com/thought2/purescript-default.git"
+        "master"
+}
 
 in  upstream // overrides // additions

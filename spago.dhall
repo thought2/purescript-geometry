@@ -5,7 +5,7 @@ You can edit this file as you like.
 { name =
     "my-project"
 , dependencies =
-    [ "psci-support", "sized-vectors", "typelevel", "generics-rep" ]
+    [ "psci-support", "sized-vectors", "typelevel", "generics-rep", "default" ]
 , packages =
     ./packages.dhall
 , sources =
