@@ -128,7 +128,7 @@ let additions = {
         , "unfoldable"
         ]
         "https://github.com/thought2/purescript-sized-vectors.git"
-        "master"
+        "feature/field-instance"
   , default =
       mkPackage
         [ "maybe"

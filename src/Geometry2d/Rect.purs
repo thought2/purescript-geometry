@@ -1,4 +1,4 @@
-module Geometry2d.Rect (Rect) where
+module Geometry2d.Rect (Rect(..), RectData) where
 
 import Prelude
 import Data.Lens (Lens', lens, set, view)
@@ -9,17 +9,17 @@ import Geometry2d.Class (class BoundingBox, _size, _center)
 
 newtype Rect a = Rect (RectData a)
 
-instance boundingBoxRect :: Ring a => BoundingBox Rect a where
-  _center = _Rect <<< (lens _.center $ _ { center = _ })
-  _size = _Rect <<< (lens _.size $ _ { size = _ })
-
 type RectData a =
   { center :: Vec D2 a
   , size :: Vec D2 a
   , rotation :: Number
   }
 
-instance defaultRect :: Semiring a => Default (Rect a) where
+instance boundingBoxRect :: Field a => BoundingBox Rect a where
+  _center = _Rect <<< (lens _.center $ _ { center = _ })
+  _size = _Rect <<< (lens _.size $ _ { size = _ })
+
+instance defaultRect :: Field a => Default (Rect a) where
   def = Rect $
     { center : zero
     , size : one

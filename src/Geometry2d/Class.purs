@@ -2,7 +2,7 @@ module Geometry2d.Class where
 
 import Prelude
 
-import Data.Lens (Lens', lens, set, view, (^.))
+import Data.Lens (Lens', lens, set, (^.))
 import Data.Typelevel.Num.Reps (D2)
 import Data.Vec (Vec)
 import Default (class Default)
@@ -22,7 +22,7 @@ down = one
 
 type Direction = forall a. Ring a => Vec D2 a
 
-class Ring a <= BoundingBox f a where
+class Field a <= BoundingBox f a where
   _center :: Lens' (f a) (Vec D2 a)
   _size :: Lens' (f a) (Vec D2 a)
 
@@ -36,15 +36,14 @@ class ( BoundingBox f a
       )
       <= Geometry  f a
 
-_corner :: forall f. BoundingBox f Number => Direction -> Lens' (f Number) (Vec D2 Number)
+_corner :: forall f a. BoundingBox f a => Direction -> Lens' (f a) (Vec D2 a)
 _corner dir = lens getter setter
   where
     getter x =
-      center x + (dir * size x * pure 0.5)
+      x^._center + (dir * x^._size * pure two)
     setter x vec =
-      set _center (vec + (-dir * size x * pure 0.5)) x
-    center x = view _center x
-    size x = view _size x
+      set _center (vec + (-dir * x^._size / pure two)) x
+    two = one + one
 
 
 scaleAbout :: forall f a. BoundingBox f a => Vec D2 a -> Vec D2 a -> f a -> f a
