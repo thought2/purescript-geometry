@@ -1,52 +1,38 @@
 module Geometry2d.Class where
 
 import Prelude
-
-import Data.Lens (Lens', lens, set, (^.))
+import Data.Lens (Lens', lens, set, (^.), Lens)
 import Data.Typelevel.Num.Reps (D2)
 import Data.Vec (Vec)
 import Default (class Default)
 
-
-left :: forall a. Ring a => a
-left = -one
-
-right :: forall a. Semiring a => a
-right = one
-
-up :: forall a. Ring a => a
-up = -one
-
-down :: forall a. Semiring a => a
-down = one
-
-type Direction = forall a. Ring a => Vec D2 a
-
-class Field a <= BoundingBox f a where
-  _center :: Lens' (f a) (Vec D2 a)
-  _size :: Lens' (f a) (Vec D2 a)
-
-class CanRotateAround f a where
-  rotateAround :: Vec D2 a -> Number -> f a -> f a
+type Vec2n = Vec D2 Number
+type Rad = Number
 
 
-class ( BoundingBox f a
-      , CanRotateAround f a
-      , Default (f a)
-      )
-      <= Geometry  f a
+class Move a where
+  _center :: Lens' a Vec2n
 
-_corner :: forall f a. BoundingBox f a => Direction -> Lens' (f a) (Vec D2 a)
+class UniformScale a where
+  _length :: Lens a a Vec2n Number
+
+class Scale a where
+  _size :: Lens' a Vec2n
+
+class Rotate a where
+  _rotation :: Lens' a Rad
+
+
+_corner :: forall a. Move a => Scale a => Vec2n -> Lens' a Vec2n
 _corner dir = lens getter setter
   where
     getter x =
-      x^._center + (dir * x^._size * pure two)
+      x^._center + (dir * x^._size / pure 2.0)
     setter x vec =
-      set _center (vec + (-dir * x^._size / pure two)) x
-    two = one + one
+      set _center (vec + (-dir * x^._size / pure 2.0)) x
 
 
-scaleAbout :: forall f a. BoundingBox f a => Vec D2 a -> Vec D2 a -> f a -> f a
+scaleAbout :: forall a. Move a => Scale a => Vec2n -> Vec2n -> a -> a
 scaleAbout origin scale x =
   x
     # set _center (origin + ((x^._center - origin) * scale))
