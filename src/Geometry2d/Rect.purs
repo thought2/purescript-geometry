@@ -1,13 +1,17 @@
-module Geometry2d.Rect (Rect, _center, _size, _rotation, _upperLeft) where
+module Geometry2d.Rect (Rect) where
 
 import Prelude
-
-import Data.Lens (Lens', lens)
+import Data.Lens (Lens', lens, set, view)
 import Data.Typelevel.Num.Reps (D2)
 import Data.Vec (Vec)
-import Default (class Default)
+import Default (class Default, def)
+import Geometry2d.Class (class BoundingBox, _size, _center)
 
 newtype Rect a = Rect (RectData a)
+
+instance boundingBoxRect :: BoundingBox Rect a where
+  _center = _Rect <<< (lens _.center $ _ { center = _ })
+  _size = _Rect <<< (lens _.size $ _ { size = _ })
 
 type RectData a =
   { center :: Vec D2 a
@@ -23,19 +27,10 @@ instance defaultRect :: Semiring a => Default (Rect a) where
     }
 
 _Rect :: forall a. Lens' (Rect a) (RectData a)
-_Rect = lens (\(Rect rect) -> rect) (\(Rect rect) x -> Rect x)
+_Rect = lens (\(Rect rect) -> rect) (\_ x -> Rect x)
 
-_center :: forall a. Lens' (Rect a) (Vec D2 a)
-_center = _Rect <<< (lens _.center $ _ { center = _ })
-
-_size :: forall a. Lens' (Rect a) (Vec D2 a)
-_size = _Rect <<< (lens _.size $ _ { size = _ })
-
-_rotation :: forall a. Lens' (Rect a) Number
-_rotation = _Rect <<< (lens _.rotation $ _ { rotation = _ })
-
-_upperLeft :: Lens' (Rect Number) (Vec D2 Number)
-_upperLeft = _Rect <<< lens getter setter
-  where
-    getter {center, size} = center - (size * pure 0.5)
-    setter all@{center, size} ul = all { center = ul + (size * pure 0.5) }
+fromBB :: forall f. BoundingBox f Number => f Number -> Rect Number
+fromBB x =
+  def
+    # set _size (view _size x)
+    # set _center (view _center x)
