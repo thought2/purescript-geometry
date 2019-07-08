@@ -9,7 +9,7 @@ import Geometry2d.Class (class BoundingBox, _size, _center)
 
 newtype Rect a = Rect (RectData a)
 
-instance boundingBoxRect :: BoundingBox Rect a where
+instance boundingBoxRect :: Ring a => BoundingBox Rect a where
   _center = _Rect <<< (lens _.center $ _ { center = _ })
   _size = _Rect <<< (lens _.size $ _ { size = _ })
 
@@ -25,6 +25,7 @@ instance defaultRect :: Semiring a => Default (Rect a) where
     , size : one
     , rotation : zero
     }
+
 
 _Rect :: forall a. Lens' (Rect a) (RectData a)
 _Rect = lens (\(Rect rect) -> rect) (\_ x -> Rect x)

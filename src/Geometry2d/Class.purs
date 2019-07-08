@@ -2,7 +2,7 @@ module Geometry2d.Class where
 
 import Prelude
 
-import Data.Lens (Lens', lens, set, view)
+import Data.Lens (Lens', lens, set, view, (^.))
 import Data.Typelevel.Num.Reps (D2)
 import Data.Vec (Vec)
 import Default (class Default)
@@ -22,19 +22,15 @@ down = one
 
 type Direction = forall a. Ring a => Vec D2 a
 
-class BoundingBox f a where
+class Ring a <= BoundingBox f a where
   _center :: Lens' (f a) (Vec D2 a)
   _size :: Lens' (f a) (Vec D2 a)
-
-class CanScaleAbout f a where
-  scaleAbout :: Vec D2 a -> Vec D2 a -> f a -> f a
 
 class CanRotateAround f a where
   rotateAround :: Vec D2 a -> Number -> f a -> f a
 
 
 class ( BoundingBox f a
-      , CanScaleAbout f a
       , CanRotateAround f a
       , Default (f a)
       )
@@ -49,3 +45,10 @@ _corner dir = lens getter setter
       set _center (vec + (-dir * size x * pure 0.5)) x
     center x = view _center x
     size x = view _size x
+
+
+scaleAbout :: forall f a. BoundingBox f a => Vec D2 a -> Vec D2 a -> f a -> f a
+scaleAbout origin scale x =
+  x
+    # set _center (origin + ((x^._center - origin) * scale))
+    # set _size (x^._size * scale)
