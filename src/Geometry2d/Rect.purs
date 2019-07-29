@@ -5,7 +5,7 @@ import Data.Lens (Lens', lens, set, view, (^.))
 import Data.Typelevel.Num.Reps (D2)
 import Data.Vec (Vec, vec2)
 import Default (class Default, def)
-import Geometry2d.Class (class Move, class Scale, class UniformScale, _size, _center, Vec2n)
+import Geometry2d.Class (class Move, class Scale, class UniformScale, class Rotate, _size, _center, Vec2n)
 
 newtype Rect = Rect RectData
 
@@ -23,6 +23,9 @@ instance uniformScaleRect :: UniformScale Rect where
 
 instance scaleRect :: Scale Rect where
   _size = _Rect <<< (lens _.size $ _ { size = _ })
+
+instance rotateRect :: Rotate Rect where
+  _rotation = _Rect <<< (lens _.rotation $ _ { rotation = _ })
 
 instance defaultRect :: Default Rect where
   def = Rect $

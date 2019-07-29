@@ -11,6 +11,7 @@ You can edit this file as you like.
     , "generics-rep"
     , "default"
     , "profunctor-lenses"
+    , "math"
     ]
 , packages =
     ./packages.dhall
